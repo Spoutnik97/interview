@@ -28,6 +28,7 @@ function App() {
   const [count, setCount] = useState(0);
 
   const [curPrice, setCurPrice] = useState<null | CurrentPriceApi>(null);
+  const [activity, setActivity] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -40,6 +41,16 @@ function App() {
       setCurPrice(data);
     })();
   }, []);
+
+  useEffect(() => {
+    if (count === 5) {
+      fetch("https://www.boredapi.com/api/activity")
+        .then((val) => val.json())
+        .then((val) => {
+          setActivity(val.activity);
+        });
+    }
+  }, [count]);
 
   return (
     <>
@@ -62,6 +73,12 @@ function App() {
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
       </p>
+      {activity && (
+        <div className="card">
+          <h2>WOW ! You seems to be bored. Let's try a new activity :</h2>
+          <p>{activity}</p>
+        </div>
+      )}
     </>
   );
 }
