@@ -29,6 +29,7 @@ function App() {
 
   const [curPrice, setCurPrice] = useState<null | CurrentPriceApi>(null);
   const [activity, setActivity] = useState(0);
+  let [joke, setJoke] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -43,6 +44,7 @@ function App() {
   }, []);
 
   useEffect(() => {
+    // if the count is 5, we fetch a new activity
     if (count === 5) {
       fetch("https://www.boredapi.com/api/activity")
         .then((val) => val.json())
@@ -77,6 +79,28 @@ function App() {
         <div className="card">
           <h2>WOW ! You seems to be bored. Let's try a new activity :</h2>
           <p>{activity}</p>
+        </div>
+      )}
+      {count % 2 == 0 && !activity && (
+        <div style={{ padding: "18px" }}>
+          <h2>Click on the button to smile</h2>
+          <div
+            style={{ margin: 11, color: "#e32356" }}
+            onClick={() => {
+              // api qui renvoie une blague aléatoirement
+              fetch("https://official-joke-api.appspot.com/random_joke")
+                .then((res) => res.json())
+                .then((res) => {
+                  setJoke(res.setup);
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            }}
+          >
+            Smile
+          </div>
+          <p>{joke}</p>
         </div>
       )}
     </>
