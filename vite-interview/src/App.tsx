@@ -1,11 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
 import Button from "./components/Button";
 
+type CurrentPriceApi = {
+  time: {
+    updated: string;
+    updatedISO: string;
+    updateduk: string;
+  };
+  disclaimer: "This data was produced from the CoinDesk Bitcoin Price Index (USD). Non-USD currency data converted using hourly conversion rate from openexchangerates.org";
+  chartName: "Bitcoin";
+  bpi: Record<
+    "USD" | "EUR",
+    {
+      code: string;
+      symbol: string;
+      rate: string;
+      description: string;
+      rate_float: number;
+    }
+  >;
+};
+
 function App() {
   const [count, setCount] = useState(0);
+
+  const [curPrice, setCurPrice] = useState<null | CurrentPriceApi>(null);
+
+  useEffect(() => {
+    (async () => {
+      const res = await fetch(
+        "https://api.coindesk.com/v1/bpi/currentprice.json"
+      );
+      const data = await res.json();
+      console.log(data);
+
+      setCurPrice(data);
+    })();
+  }, []);
 
   return (
     <>
@@ -22,9 +56,8 @@ function App() {
         <Button onClick={() => setCount((count) => count + 1)}>
           count is {count}
         </Button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <h2>The Bitcoin is worth</h2>
+        <p>{"$" + curPrice?.bpi.USD.rate_float.toLocaleString("en-US", {})}</p>
       </div>
       <p className="read-the-docs">
         Click on the Vite and React logos to learn more
